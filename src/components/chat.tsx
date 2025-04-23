@@ -1,11 +1,13 @@
 'use client';
 
+import 'dotenv/config';
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { IconArrowUp } from './ui/icons';
 import AboutCard from './cards/aboutcard';
+import { continueTextConversation } from '@/app/actions';
 
 
 export default function Chat() {
@@ -19,7 +21,8 @@ export default function Chat() {
         // ];
         // setMessages(newMessages);
         setInput('');
-        // const result = await continueTextConversation(newMessages);
+        const result = await continueTextConversation();
+        console.log(result);
         // for await (const content of readStreamableValue(result)) {
         //   setMessages([
         //     ...newMessages,

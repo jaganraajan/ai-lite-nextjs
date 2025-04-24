@@ -10,7 +10,7 @@ import AboutCard from './cards/aboutcard';
 import { continueTextConversation } from '@/app/actions';
 import { CoreMessage } from 'ai';
 import ReactMarkdown from 'react-markdown';
-
+import { FaUser, FaRobot } from 'react-icons/fa';
 
 export default function Chat() {
     const [input, setInput] = useState<string>('');  
@@ -67,15 +67,33 @@ export default function Chat() {
             : (
                 <div className="max-w-xl mx-auto mt-10 mb-24">
                 {messages.map((message, index) => (
-                    <div key={index} className="whitespace-pre-wrap flex mb-5">
-                    <div className={`${message.role === 'user' ? 'ml-auto' : 'bg-transparent'} p-2 rounded-lg`}>
-                        <ReactMarkdown>{message.content as string}</ReactMarkdown>
-                    </div>
+                    <div key={index} className={`flex items-start mb-4 ${message.role === 'user' ? 'justify-end' : ''}`}>
+                        {/* Display user or AI icon */}
+                        {message.role === 'assistant' && (
+                            <div className="mr-2 p-2">
+                                <FaRobot className="text-white" size={24} />
+                            </div>
+                        )}
+                        {/* Display the message content */}
+                        <div
+                            className={`p-2 rounded-lg max-w-m ${
+                                message.role === 'user'
+                                    ? 'bg-blue-100 text-blue-900 ml-auto'
+                                    : 'bg-gray-200 text-gray-900'
+                            }`}
+                        >
+                            <ReactMarkdown>{message.content as string}</ReactMarkdown>
+                        </div>
+                        {message.role === 'user' && (
+                            <div className="ml-2 p-2">
+                                <FaUser className="text-blue-900" size={24} />
+                            </div>
+                        )}
                     </div>
                 ))}
                 </div>
             )}
-            <div className="fixed inset-x-0 bottom-10 w-full ">
+            <div className="fixed inset-x-0 bottom-10 w-full bg-black">
                 <div className="w-full max-w-xl mx-auto">
                 <Card className="p-2">
                     <form onSubmit={handleSubmit}>

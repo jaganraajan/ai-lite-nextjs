@@ -1,7 +1,7 @@
 'use client';
 
 import 'dotenv/config';
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Card } from "@/components/ui/card";
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,8 @@ import { FaUser, FaRobot } from 'react-icons/fa';
 export default function Chat() {
     const [input, setInput] = useState<string>('');  
     const [messages, setMessages] = useState<CoreMessage[]>([]);
+    const [error, setError] = useState<string | null>(null); // State to track errors
+    const chatContainerRef = useRef<HTMLDivElement>(null); // Ref for the chat container
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -24,43 +26,60 @@ export default function Chat() {
         ];
         setMessages(newMessages);
         setInput('');
-        const resultTextStream = await continueTextConversation(newMessages);
-        // Create a variable to accumulate the streamed text
-        let accumulatedText = '';
 
-        for await (const textPart of resultTextStream) {
-            accumulatedText += textPart; // Append the new text part to the accumulated text
+        try {
+            const resultTextStream = await continueTextConversation(newMessages);
+            // Create a variable to accumulate the streamed text
+            let accumulatedText = '';
 
-            // Update the last message in the messages array to reflect the accumulated text
-            setMessages((prevMessages) => {
-                const updatedMessages = [...prevMessages];
+            for await (const textPart of resultTextStream) {
+                accumulatedText += textPart; // Append the new text part to the accumulated text
 
-                // Check if the last message is from the assistant
-                const lastMessage = updatedMessages[updatedMessages.length - 1];
-                if (lastMessage?.role === 'assistant') {
-                    // Update the last assistant message with the accumulated text
-                    updatedMessages[updatedMessages.length - 1] = {
-                        ...lastMessage,
-                        content: accumulatedText,
-                    };
-                } else {
-                    // Add a new assistant message if none exists
-                    updatedMessages.push({
-                        role: 'assistant',
-                        content: accumulatedText,
-                    });
-                }
+                // Update the last message in the messages array to reflect the accumulated text
+                setMessages((prevMessages) => {
+                    const updatedMessages = [...prevMessages];
 
-                return updatedMessages;
-            });
+                    // Check if the last message is from the assistant
+                    const lastMessage = updatedMessages[updatedMessages.length - 1];
+                    if (lastMessage?.role === 'assistant') {
+                        // Update the last assistant message with the accumulated text
+                        updatedMessages[updatedMessages.length - 1] = {
+                            ...lastMessage,
+                            content: accumulatedText,
+                        };
+                    } else {
+                        // Add a new assistant message if none exists
+                        updatedMessages.push({
+                            role: 'assistant',
+                            content: accumulatedText,
+                        });
+                    }
+
+                    return updatedMessages;
+                });
+            }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (err: any) {
+            if (err.response?.status === 429) {
+                setError('Too many requests. Please try again later.');
+            } else {
+                setError('An unexpected error occurred. Please try again.');
+            }
         }
+      };
 
-        console.log('Updated Messages:', newMessages);
-        console.log('Updated Messages:', messages);
-      }
+    // Scroll to the bottom of the chat container whenever messages are updated
+    useEffect(() => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+        }
+    }, [messages]);
 
     return (
-        <div className="group w-full overflow-auto ">
+        <div 
+            ref={chatContainerRef} // Attach the ref to the chat container
+            className="group w-full overflow-auto "
+        >
             {messages.length <= 0 ? ( 
                 <AboutCard />  
             ) 
@@ -93,6 +112,22 @@ export default function Chat() {
                 ))}
                 </div>
             )}
+
+            {/* Error Popup */}
+            {error && (
+                <div className="fixed inset-0 flex items-center justify-center z-50">
+                    <div className="bg-white p-4 rounded-lg shadow-lg max-w-sm text-center">
+                        <p className="text-red-500 font-bold">{error}</p>
+                        <button
+                            onClick={() => setError(null)}
+                            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-lg"
+                        >
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <div className="fixed inset-x-0 bottom-10 w-full bg-black">
                 <div className="w-full max-w-xl mx-auto">
                 <Card className="p-2">

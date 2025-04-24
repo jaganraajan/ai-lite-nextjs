@@ -1,7 +1,5 @@
-// import { createStreamableValue } from 'ai/rsc';
 import 'dotenv/config';
-import { CoreMessage, generateText } from 'ai';
-// import { google } from "@ai-sdk/google"
+import { CoreMessage, streamText } from 'ai';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 
 
@@ -11,17 +9,12 @@ export async function continueTextConversation(messages?: CoreMessage[]) {
     apiKey: process.env.NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY,
   });
   
-  const { text } = await generateText({
+  const { textStream } = await streamText({
     model: google('gemini-1.5-pro-latest'),
-    // messages,
-    prompt: "what can AI do?"
+    messages
   });
 
-  console.log(text);
-  console.log(messages);
-  // const stream = result.textStream;
-  // console.log(stream);
-  // return stream.value;
+  return textStream;
 }
 
 export async function checkAIAvailability() {

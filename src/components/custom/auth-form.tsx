@@ -6,6 +6,7 @@ export function AuthForm({
   children,
   defaultEmail = "",
 }: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   action: any;
   children: React.ReactNode;
   defaultEmail?: string;

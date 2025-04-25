@@ -5,6 +5,7 @@ import { SubmitButton } from "@/components/custom/submit-button";
 import Link from "next/link";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import axios from "axios";
 
 export default function Page() {
     const [email, setEmail] = useState("");
@@ -26,8 +27,10 @@ export default function Page() {
             if (result?.error) {
               setMessage(result.error);
             } else {
+                const responseUserId = await axios.post('/api/getUser', { email });
+                console.log('responseUserId', responseUserId.data?.user?.id)
               // Redirect to the dashboard or another page after successful login
-              window.location.href = "/";
+              window.location.href = `/${responseUserId.data?.user?.id}`;
               setMessage('Success login, redirecting...')
             }
         } catch (error) {

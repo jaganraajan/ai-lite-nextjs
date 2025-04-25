@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { signIn } from "next-auth/react";
 
 import { AuthForm } from "@/components/custom/auth-form";
 import { SubmitButton } from "@/components/custom/submit-button";
@@ -20,6 +21,26 @@ export default function Page() {
         const password = formData.get("password") as string;
         const response = await axios.post('/api/createUser', { email, password });
         setMessage(response.data.message);
+        if(response?.status == 200) {
+            const result = await signIn("credentials", {
+                redirect: false, // Prevent automatic redirection
+                email,
+                password,
+              });
+  
+              console.log(result);
+          
+              if (result?.error) {
+                setMessage(result.error);
+              } else {
+                const responseUserId = await axios.post('/api/getUser', { email });
+                console.log('responseUserId after registering', responseUserId.data?.user?.id)
+                // Redirect to the dashboard or another page after successful login
+                window.location.href = `/${responseUserId.data?.user?.id}`;
+            
+                setMessage('Success login, redirecting...')
+              }
+        }
     } catch (error) {
         setMessage('An error occurred');
         console.log(error);

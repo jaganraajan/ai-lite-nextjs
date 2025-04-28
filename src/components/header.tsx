@@ -20,8 +20,7 @@ export async function Header() {
               rel="noopener noreferrer"
             >
               <FaLinkedin size={24} />
-              <span className="ml-2 hidden sm:inline">jagan-raajan</span>
-            </a>
+              </a>
           </li>
           <li>
             <a
@@ -31,7 +30,6 @@ export async function Header() {
               rel="noopener noreferrer"
             >
               <FaGithub size={24} />
-              <span className="ml-2 hidden sm:inline">jaganraajan</span>
             </a>
           </li>
         </ul>

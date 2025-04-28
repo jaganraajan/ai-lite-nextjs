@@ -12,22 +12,30 @@ import {
       <div className="max-w-xl mx-auto mt-10">
         <Card>
           <CardHeader>
-            <CardTitle>Next AI SDK Lite</CardTitle>
-            <CardDescription>A no bells or whistles AI starter kit</CardDescription>
+            <CardTitle>Next.js AI Chatbot</CardTitle>
+            <CardDescription>A simplified AI project built with Next.js</CardDescription>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground/90 leading-normal prose"> 
-            <p className="mb-3">A simplified Next.js AI starter kit designed with simplicity and speed in mind.</p>
-            <p className="mb-3">Built with Next.js, AI SDK, Tailwind, Typescript and shadcn you can build a bare minimum AI Chatbot with only an environment variable. Based off the popular <Link href="https://chat.vercel.ai/">Next AI Chatbot</Link> the aim for this project is to remove any dependency outside of basic functionality and examples with an emphasis on making changes and experimenting with the AI SDK. </p>
-            <p className="mb-3 font-semibold">Big Opinions:</p>
+          <CardContent className="text-sm text-muted-foreground/90 leading-normal prose">
+            <p className="mb-3">
+              This is a side project I built as a simplified Next.js AI chatbot. It is designed to help developers quickly experiment with AI integrations and learn the basics of building AI-powered applications.
+            </p>
+            <p className="mb-3">
+              Built with <strong>Next.js</strong>, <strong>AI SDK</strong>, <strong>Tailwind CSS</strong>, <strong>TypeScript</strong>, and <strong>shadcn</strong>, this project provides a minimalistic foundation for creating AI chatbots. The goal is to make it easy to customize and extend while focusing on simplicity and speed.
+            </p>
+            <p className="mb-3 font-semibold">Key Features:</p>
             <ul className="flex flex-col mb-2">
-              <li>→ Speed to learning and experimenting AI SDK</li>
-              <li>→ App Router, Server Actions, React Server Components</li>
-              <li>→ No auth, storage or sharing</li>
-              <li></li>
+              <li>→ Quick setup and experimentation with AI SDK</li>
+              <li>→ Built using modern web technologies like Next.js and React</li>
+              <li>→ Minimal dependencies for faster learning and development</li>
+              <li>→ Fully customizable and extendable</li>
             </ul>
-            <p><Link href="https://github.com/mattjared/nextjs-ai-lite" className="underline">Fork the repo and get hacking</Link> </p>
+            <p>
+              <Link href="https://github.com/jaganraajan/nextjs-ai-chatbot" className="underline">
+                Check out my GitHub repository and start building your own AI chatbot!
+              </Link>
+            </p>
           </CardContent>
         </Card>
       </div>
-    )
+    );
   }

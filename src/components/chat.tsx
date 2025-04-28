@@ -12,9 +12,8 @@ import { CoreMessage } from 'ai';
 import ReactMarkdown from 'react-markdown';
 import { FaUser, FaRobot } from 'react-icons/fa';
 
-export default function Chat() {
+export default function Chat({ messages, setMessages }: { messages: CoreMessage[]; setMessages: React.Dispatch<React.SetStateAction<CoreMessage[]>> }) {
     const [input, setInput] = useState<string>('');  
-    const [messages, setMessages] = useState<CoreMessage[]>([]);
     const [error, setError] = useState<string | null>(null); // State to track errors
     const chatContainerRef = useRef<HTMLDivElement>(null); // Ref for the chat container
 

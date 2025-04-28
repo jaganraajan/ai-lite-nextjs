@@ -11,11 +11,31 @@ import { continueTextConversation } from '@/app/actions';
 import { CoreMessage } from 'ai';
 import ReactMarkdown from 'react-markdown';
 import { FaUser, FaRobot } from 'react-icons/fa';
+import axios from "axios";
 
 export default function Chat({ messages, setMessages }: { messages: CoreMessage[]; setMessages: React.Dispatch<React.SetStateAction<CoreMessage[]>> }) {
     const [input, setInput] = useState<string>('');  
     const [error, setError] = useState<string | null>(null); // State to track errors
     const chatContainerRef = useRef<HTMLDivElement>(null); // Ref for the chat container
+
+    const handleStoreMessages = async (updatedMessages: CoreMessage[]) => {
+        const userId = '025d743f-258e-43f4-afdf-35ddd9c0cae7'
+        if (!userId) {
+          console.error("User is not logged in. Cannot store messages.");
+          return;
+        }
+    
+        try {
+          // Send a POST request to the API to store chat history
+          await axios.post("/api/storeChatHistory", {
+            userId: userId, // Pass the logged-in user's ID
+            messages: updatedMessages, // Pass the updated messages
+          });
+          console.log("Chat history stored successfully!");
+        } catch (error) {
+          console.error("Failed to store chat history:", error);
+        }
+      };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -54,9 +74,15 @@ export default function Chat({ messages, setMessages }: { messages: CoreMessage[
                         });
                     }
 
+                     // Call the function to store the updated messages in the database
+                    // handleStoreMessages(updatedMessages);
+
                     return updatedMessages;
                 });
             }
+
+            // Call handleStoreMessages after the AI content is fully streamed
+            handleStoreMessages([...newMessages, { role: "assistant", content: accumulatedText }]);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } catch (err: any) {
             if (err.response?.status === 429) {

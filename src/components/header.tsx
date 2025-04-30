@@ -1,13 +1,18 @@
 'use client';
 
 import * as React from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import { CoreMessage } from 'ai';
+import axios from 'axios';
 
-export function Header({ setMessages }: { setMessages: React.Dispatch<React.SetStateAction<CoreMessage[]>> }) {
+export function Header({ setMessages, id }: { setMessages: React.Dispatch<React.SetStateAction<CoreMessage[]>>, id?: string }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [loading, setLoading] = useState(false); // State to handle loading
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any  
+  const [chatHistory, setChatHistory] = useState<any[]>([]); // State to store chat history
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -16,7 +21,37 @@ export function Header({ setMessages }: { setMessages: React.Dispatch<React.SetS
   const handleClearChat = () => {
     setMessages([]); // Clear the messages
     console.log('Chat cleared');
+    toggleSidebar(); // Close the sidebar
   };
+
+  // Fetch chat history when id exists
+  useEffect(() => {
+    const fetchChatHistory = async () => {
+      if (id) {
+        setLoading(true); // Set loading to true while fetching
+        try {
+          const response = await axios.get(`/api/getChatHistory`, {
+            params: { id }, // Pass the id as a query parameter
+          });
+          console.log(response.data.chats); // Set the fetched chat history
+          setChatHistory(response.data.chats); // Set the fetched chat history
+        } catch (error) {
+          console.error('Error fetching chat history:', error);
+        } finally {
+          setLoading(false); // Stop loading
+        }
+      }
+    };
+
+    fetchChatHistory();
+  }, [id]);
+
+  function truncateContent(content: string, maxLength: number): string {
+    if (content.length > maxLength) {
+      return content.slice(0, maxLength) + '...'; // Trim and add ellipsis
+    }
+    return content; // Return the full content if it's within the limit
+  }
 
   const SidebarLeftIcon = ({ size = 16 }: { size?: number }) => (
     <svg
@@ -34,6 +69,16 @@ export function Header({ setMessages }: { setMessages: React.Dispatch<React.SetS
       />
     </svg>
   );
+
+  const handleSelectChat = (chat: { messages: { content: string; role: string }[] }) => {
+    setMessages(
+      chat.messages.map((message) => ({
+        content: message.content,
+        role: message.role as 'user' | 'assistant', // Ensure role matches CoreMessage type
+      }))
+    );
+    toggleSidebar(); // Close the sidebar
+  };
 
   return (
     <header className="sticky top-0 z-50 flex items-center justify-center w-full h-16 px-4 border-b shrink-0">  
@@ -65,11 +110,41 @@ export function Header({ setMessages }: { setMessages: React.Dispatch<React.SetS
               +
             </button>
           </div>
-          <p className='mt-8'>Login to save and revisit previous chats!</p>
-          {/* Login Button */}
-        <button className="px-4 py-2 mt-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-          <a href="/login">Login</a>
-        </button>
+          {id ? (
+            <div className="mt-4">
+              <h2 className="text-lg font-bold">Chat History</h2>
+              {loading ? (
+                <p className="text-gray-500 mt-2">Loading chat history...</p>
+              ) : chatHistory.length > 0 ? (
+                <ul className="mt-4 space-y-2">
+                  {chatHistory.map((chat: { messages: { content: string; role: string }[] }, index: number) => (
+                    <li 
+                      key={index}
+                      className="text-sm text-gray-700 bg-gray-100 p-2 rounded-lg"
+                      onClick={() => handleSelectChat(chat)}
+                    >
+                      {/* Display the content of all messages in the chat */}
+                      {chat.messages.map((message, messageIndex) => (
+                        <div key={messageIndex} className="mb-2">
+                          <strong>{message.role === 'user' ? 'User' : 'Assistant'}:</strong> {truncateContent(message.content, 100)}
+                        </div>
+                      ))}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-gray-500 mt-2">No chat history found.</p>
+              )}
+            </div>
+          ) : (
+            <div>
+              <p className="mt-8">Login to save and revisit previous chats!</p>
+              <button className="px-4 py-2 mt-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                <a href="/login">Login</a>
+              </button>
+            </div>
+          )}
+          
         </div>
       </div>
       <Link href="/" rel="nofollow" className="ml-auto font-bold">

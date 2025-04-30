@@ -13,14 +13,13 @@ import ReactMarkdown from 'react-markdown';
 import { FaUser, FaRobot } from 'react-icons/fa';
 import axios from "axios";
 
-export default function Chat({ messages, setMessages }: { messages: CoreMessage[]; setMessages: React.Dispatch<React.SetStateAction<CoreMessage[]>> }) {
+export default function Chat({ messages, setMessages, id }: { messages: CoreMessage[]; setMessages: React.Dispatch<React.SetStateAction<CoreMessage[]>>, id?: string }) {
     const [input, setInput] = useState<string>('');  
     const [error, setError] = useState<string | null>(null); // State to track errors
     const chatContainerRef = useRef<HTMLDivElement>(null); // Ref for the chat container
 
     const handleStoreMessages = async (updatedMessages: CoreMessage[]) => {
-        const userId = '025d743f-258e-43f4-afdf-35ddd9c0cae7'
-        if (!userId) {
+        if (!id) {
           console.error("User is not logged in. Cannot store messages.");
           return;
         }
@@ -28,7 +27,7 @@ export default function Chat({ messages, setMessages }: { messages: CoreMessage[
         try {
           // Send a POST request to the API to store chat history
           await axios.post("/api/storeChatHistory", {
-            userId: userId, // Pass the logged-in user's ID
+            userId: id, // Pass the logged-in user's ID
             messages: updatedMessages, // Pass the updated messages
           });
           console.log("Chat history stored successfully!");

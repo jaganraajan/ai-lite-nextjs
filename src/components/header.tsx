@@ -3,8 +3,7 @@
 import * as React from 'react'
 import { useState } from 'react'
 import Link from 'next/link'
-// import EnvCard from './cards/envcard'
-import { FaGithub, FaLinkedin, FaBars } from 'react-icons/fa';
+import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import { CoreMessage } from 'ai';
 
 export function Header({ setMessages }: { setMessages: React.Dispatch<React.SetStateAction<CoreMessage[]>> }) {
@@ -19,18 +18,35 @@ export function Header({ setMessages }: { setMessages: React.Dispatch<React.SetS
     console.log('Chat cleared');
   };
 
+  const SidebarLeftIcon = ({ size = 16 }: { size?: number }) => (
+    <svg
+      height={size}
+      strokeLinejoin="round"
+      viewBox="0 0 16 16"
+      width={size}
+      style={{ color: 'currentcolor' }}
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M6.245 2.5H14.5V12.5C14.5 13.0523 14.0523 13.5 13.5 13.5H6.245V2.5ZM4.995 2.5H1.5V12.5C1.5 13.0523 1.94772 13.5 2.5 13.5H4.995V2.5ZM0 1H1.5H14.5H16V2.5V12.5C16 13.8807 14.8807 15 13.5 15H2.5C1.11929 15 0 13.8807 0 12.5V2.5V1Z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+
   return (
     <header className="sticky top-0 z-50 flex items-center justify-center w-full h-16 px-4 border-b shrink-0">  
       {/* <EnvCard /> */}
       {/* Sidebar Toggle Button */}
       <button
         onClick={toggleSidebar}
-        className={`fixed top-4 ${
-          isSidebarOpen ? 'left-64' : 'left-4'
-        } z-50 text-gray-600 hover:text-gray-900 focus:outline-none transition-all duration-300`}
+        className={`fixed top-6 ${
+          isSidebarOpen ? 'left-64 ml-2' : 'left-4'
+        } z-50 md:px-2 md:h-fit focus:outline-none transition-all duration-300`}
         aria-label={isSidebarOpen ? 'Close Sidebar' : 'Open Sidebar'}
       >
-        <FaBars size={24} />
+        <SidebarLeftIcon size={20}/>
       </button>
       {/* Sidebar */}
       <div
@@ -39,26 +55,28 @@ export function Header({ setMessages }: { setMessages: React.Dispatch<React.SetS
         } transition-transform duration-300 ease-in-out`}
       >
         <div className="p-4">
-          <h2 className="text-lg font-bold">Gemini Chatbot</h2>
-          <button
-            onClick={handleClearChat}
-            className="ml-4 px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-            aria-label="Clear Chat and Show About"
-          >
-            +
-          </button>
-          <p>Login to save and revisit previous chats!</p>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold">Gemini Chatbot</h2>
+            <button
+              onClick={handleClearChat}
+              className="ml-4 px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              aria-label="Clear Chat and Show About"
+            >
+              +
+            </button>
+          </div>
+          <p className='mt-8'>Login to save and revisit previous chats!</p>
+          {/* Login Button */}
+        <button className="px-4 py-2 mt-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+          <a href="/login">Login</a>
+        </button>
         </div>
       </div>
-      <Link href="/" rel="nofollow" className="mr-2 font-bold">
+      <Link href="/" rel="nofollow" className="ml-auto font-bold">
         Next.js Gemini AI
       </Link>
       {/* Social Links and Login Button */}
       <div className="flex items-center ml-auto space-x-6">
-        {/* Login Button */}
-        <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
-          <a href="/login">Login</a>
-        </button>
 
         {/* Social Links */}
         <ul className="flex space-x-6 items-center">

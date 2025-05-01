@@ -10,7 +10,8 @@ import AboutCard from './cards/aboutcard';
 import { continueTextConversation } from '@/app/actions';
 import { CoreMessage } from 'ai';
 import ReactMarkdown from 'react-markdown';
-import { FaUser, FaRobot } from 'react-icons/fa';
+import { AiOutlineRobot } from 'react-icons/ai';
+import { HiOutlineUser } from "react-icons/hi";
 import axios from "axios";
 
 export default function Chat({ messages, setMessages, id }: { messages: CoreMessage[]; setMessages: React.Dispatch<React.SetStateAction<CoreMessage[]>>, id?: string }) {
@@ -20,7 +21,7 @@ export default function Chat({ messages, setMessages, id }: { messages: CoreMess
 
     const handleStoreMessages = async (updatedMessages: CoreMessage[]) => {
         if (!id) {
-          console.error("User is not logged in. Cannot store messages.");
+          console.log("User is not logged in. Cannot store messages.");
           return;
         }
     
@@ -110,8 +111,8 @@ export default function Chat({ messages, setMessages, id }: { messages: CoreMess
                     <div key={index} className={`flex items-start mb-4 ${message.role === 'user' ? 'ml-4 justify-end' : 'mr-4'}`}>
                         {/* Display user or AI icon */}
                         {message.role === 'assistant' && (
-                            <div className="mr-2 p-2">
-                                <FaRobot className="text-white" size={24} />
+                            <div className="p-2">
+                                <AiOutlineRobot className="text-white" size={24} />
                             </div>
                         )}
                         {/* Display the message content */}
@@ -125,8 +126,8 @@ export default function Chat({ messages, setMessages, id }: { messages: CoreMess
                             <ReactMarkdown>{message.content as string}</ReactMarkdown>
                         </div>
                         {message.role === 'user' && (
-                            <div className="ml-2 p-2">
-                                <FaUser className="text-blue-900" size={24} />
+                            <div className="p-2">
+                                <HiOutlineUser size={24} className="text-blue-200" />
                             </div>
                         )}
                     </div>

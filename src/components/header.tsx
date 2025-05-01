@@ -82,7 +82,6 @@ export function Header({ setMessages, id }: { setMessages: React.Dispatch<React.
 
   return (
     <header className="sticky top-0 z-50 flex items-center justify-center w-full h-16 px-4 border-b shrink-0">  
-      {/* <EnvCard /> */}
       {/* Sidebar Toggle Button */}
       <button
         onClick={toggleSidebar}
@@ -173,7 +172,7 @@ export function Header({ setMessages, id }: { setMessages: React.Dispatch<React.
           </li>
           <li>
             <a
-              href="https://github.com/jaganraajan/"
+              href="https://github.com/jaganraajan/ai-lite-nextjs"
               className="flex items-center text-gray-300 hover:text-primary-400 transition-colors"
               target="_blank"
               rel="noopener noreferrer"

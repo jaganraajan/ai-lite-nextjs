@@ -30,7 +30,7 @@ import {
               <li>→ Fully customizable and extendable</li>
             </ul>
             <p>
-              <Link href="https://github.com/jaganraajan/nextjs-ai-chatbot" className="underline">
+              <Link href="https://github.com/jaganraajan/ai-lite-nextjs" className="underline">
                 Check out my GitHub repository and start building your own AI chatbot!
               </Link>
             </p>

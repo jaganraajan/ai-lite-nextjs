@@ -11,6 +11,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
   const pool = new Pool({ connectionString: process.env.DATABASE_URL })
   const options: NextAuthOptions = {
     adapter: NeonAdapter(pool),
+    secret: process.env.NEXTAUTH_SECRET,
     providers: [
       CredentialsProvider({
       name: "Credentials",

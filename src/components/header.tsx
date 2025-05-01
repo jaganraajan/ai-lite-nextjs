@@ -33,7 +33,6 @@ export function Header({ setMessages, id }: { setMessages: React.Dispatch<React.
           const response = await axios.get(`/api/getChatHistory`, {
             params: { id }, // Pass the id as a query parameter
           });
-          console.log(response.data.chats); // Set the fetched chat history
           setChatHistory(response.data.chats); // Set the fetched chat history
         } catch (error) {
           console.error('Error fetching chat history:', error);

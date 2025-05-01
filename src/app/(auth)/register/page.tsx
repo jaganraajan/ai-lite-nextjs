@@ -27,14 +27,12 @@ export default function Page() {
                 email,
                 password,
               });
-  
-              console.log(result);
+
           
               if (result?.error) {
                 setMessage(result.error);
               } else {
                 const responseUserId = await axios.post('/api/getUser', { email });
-                console.log('responseUserId after registering', responseUserId.data?.user?.id)
                 // Redirect to the dashboard or another page after successful login
                 window.location.href = `/chat/${responseUserId.data?.user?.id}`;
             

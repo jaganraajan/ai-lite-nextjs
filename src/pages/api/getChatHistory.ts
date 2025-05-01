@@ -15,7 +15,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const result = await sql`SELECT messages FROM chathistory WHERE user_id = ${id} ORDER BY created_at DESC`;
     
-      console.log(result);
       res.status(200).json({ chats: result });
     } catch (error) {
       console.error("Error storing chat history:", error);

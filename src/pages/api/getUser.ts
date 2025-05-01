@@ -4,7 +4,6 @@ import { neon } from '@neondatabase/serverless';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
         const { email } = req.body;
-        console.log(email);
 
         try {
             const sql = neon(process.env.DATABASE_URL || '');

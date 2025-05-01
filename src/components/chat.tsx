@@ -73,9 +73,6 @@ export default function Chat({ messages, setMessages, id }: { messages: CoreMess
                         });
                     }
 
-                     // Call the function to store the updated messages in the database
-                    // handleStoreMessages(updatedMessages);
-
                     return updatedMessages;
                 });
             }
@@ -110,7 +107,7 @@ export default function Chat({ messages, setMessages, id }: { messages: CoreMess
             : (
                 <div className="max-w-xl mx-auto mt-10 mb-24">
                 {messages.map((message, index) => (
-                    <div key={index} className={`flex items-start mb-4 ${message.role === 'user' ? 'justify-end' : ''}`}>
+                    <div key={index} className={`flex items-start mb-4 ${message.role === 'user' ? 'ml-4 justify-end' : 'mr-4'}`}>
                         {/* Display user or AI icon */}
                         {message.role === 'assistant' && (
                             <div className="mr-2 p-2">

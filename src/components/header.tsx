@@ -116,22 +116,28 @@ export function Header({ setMessages, id }: { setMessages: React.Dispatch<React.
               {loading ? (
                 <p className="text-gray-500 mt-2">Loading chat history...</p>
               ) : chatHistory.length > 0 ? (
-                <ul className="mt-4 space-y-2">
-                  {chatHistory.map((chat: { messages: { content: string; role: string }[] }, index: number) => (
-                    <li 
-                      key={index}
-                      className="text-sm text-gray-700 bg-gray-100 p-2 rounded-lg"
-                      onClick={() => handleSelectChat(chat)}
-                    >
-                      {/* Display the content of all messages in the chat */}
-                      {chat.messages.map((message, messageIndex) => (
-                        <div key={messageIndex} className="mb-2">
-                          <strong>{message.role === 'user' ? 'User' : 'Assistant'}:</strong> {truncateContent(message.content, 100)}
-                        </div>
-                      ))}
-                    </li>
-                  ))}
-                </ul>
+                <div className="mt-4 max-h-screen overflow-y-auto">
+                  <ul className="space-y-2">
+                    {chatHistory.map((chat: { messages: { content: string; role: string }[] }, index: number) => (
+                      <li
+                        key={index}
+                        className="text-sm text-gray-700 bg-gray-100 p-2 rounded-lg cursor-pointer hover:bg-gray-200 transition-colors"
+                        onClick={() => handleSelectChat(chat)}
+                      >
+                        {/* Display up to 2 messages in the chat */}
+                        {chat.messages.slice(0, 2).map((message, messageIndex) => (
+                          <div key={messageIndex} className="mb-2">
+                            <strong>{message.role === 'user' ? 'User' : 'Assistant'}:</strong> {truncateContent(message.content, 100)}
+                          </div>
+                        ))}
+                        {/* Indicate if there are more messages */}
+                        {chat.messages.length > 2 && (
+                          <div className="text-gray-500 text-xs italic">...and more</div>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               ) : (
                 <p className="text-gray-500 mt-2">No chat history found.</p>
               )}

@@ -47,12 +47,15 @@ export default function Chat({ messages, setMessages, id }: { messages: CoreMess
         setInput('');
 
         try {
-            const resultTextStream = await continueTextConversation(newMessages);
+        const resultTextStream = await continueTextConversation(newMessages);
+        if (!resultTextStream) {
+            throw new Error('Failed to get response from continueTextConversation.');
+        }
             // Create a variable to accumulate the streamed text
             let accumulatedText = '';
 
-            for await (const textPart of resultTextStream) {
-                accumulatedText += textPart; // Append the new text part to the accumulated text
+            for await (const streamPart of resultTextStream) {
+                accumulatedText += streamPart.text; // Append the new text part to the accumulated text
 
                 // Update the last message in the messages array to reflect the accumulated text
                 setMessages((prevMessages) => {

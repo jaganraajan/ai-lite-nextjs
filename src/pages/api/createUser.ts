@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { neon } from '@neondatabase/serverless';
 import { v4 as uuidv4 } from 'uuid';
-import { genSaltSync, hashSync } from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
@@ -9,8 +9,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         try {
             const sql = neon(process.env.DATABASE_URL || '');
 
-            const salt = genSaltSync(10);
-            const hash = hashSync(password, salt);
+            const salt = bcrypt.genSaltSync(10);
+            const hash = bcrypt.hashSync(password, salt); 
             
             const id = uuidv4();
             await sql`

@@ -3,7 +3,7 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import NeonAdapter from "@auth/neon-adapter";
 import { Pool } from "@neondatabase/serverless";
-import { compare } from "bcrypt";
+import bcrypt from "bcryptjs"; // Use bcryptjs for serverless compatibility
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
@@ -29,7 +29,9 @@ export const authOptions: NextAuthOptions = {
             throw new Error("No user found with this email");
           }
           const dbUser = result.rows[0];
-          const isPasswordValid = await compare(password ?? "", dbUser.password);
+          // Use bcryptjs for password comparison
+          const isPasswordValid = await bcrypt.compare(password ?? "", dbUser.password);
+         
           if (!isPasswordValid) {
             throw new Error("Invalid password");
           }

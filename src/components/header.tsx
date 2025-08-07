@@ -6,8 +6,10 @@ import Link from 'next/link'
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 import { CoreMessage } from 'ai';
 import axios from 'axios';
+import { useSession, signOut } from 'next-auth/react';
 
-export function Header({ setMessages, id }: { setMessages: React.Dispatch<React.SetStateAction<CoreMessage[]>>, id?: string }) {
+export function Header({ setMessages, onChatHistoryRefresh }: { setMessages: React.Dispatch<React.SetStateAction<CoreMessage[]>>, onChatHistoryRefresh?: React.MutableRefObject<(() => void) | undefined> }) {
+  const { data: session } = useSession();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(false); // State to handle loading
 
@@ -24,26 +26,33 @@ export function Header({ setMessages, id }: { setMessages: React.Dispatch<React.
     toggleSidebar(); // Close the sidebar
   };
 
-  // Fetch chat history when id exists
-  useEffect(() => {
-    const fetchChatHistory = async () => {
-      if (id) {
-        setLoading(true); // Set loading to true while fetching
-        try {
-          const response = await axios.get(`/api/getChatHistory`, {
-            params: { id }, // Pass the id as a query parameter
-          });
-          setChatHistory(response.data.chats); // Set the fetched chat history
-        } catch (error) {
-          console.error('Error fetching chat history:', error);
-        } finally {
-          setLoading(false); // Stop loading
-        }
+  // Fetch chat history when session exists
+  const fetchChatHistory = React.useCallback(async () => {
+    if (session?.user?.id) {
+      setLoading(true); // Set loading to true while fetching
+      try {
+        const response = await axios.get(`/api/getChatHistory`, {
+          params: { id: session.user.id }, // Pass the user id from session
+        });
+        setChatHistory(response.data.chats); // Set the fetched chat history
+      } catch (error) {
+        console.error('Error fetching chat history:', error);
+      } finally {
+        setLoading(false); // Stop loading
       }
-    };
+    }
+  }, [session?.user?.id]);
 
+  useEffect(() => {
     fetchChatHistory();
-  }, [id]);
+  }, [fetchChatHistory]);
+
+  // Expose fetchChatHistory through the callback
+  useEffect(() => {
+    if (onChatHistoryRefresh) {
+      onChatHistoryRefresh.current = fetchChatHistory;
+    }
+  }, [onChatHistoryRefresh, fetchChatHistory]);
 
   function truncateContent(content: string, maxLength: number): string {
     if (content.length > maxLength) {
@@ -108,7 +117,7 @@ export function Header({ setMessages, id }: { setMessages: React.Dispatch<React.
               +
             </button>
           </div>
-          {id ? (
+          {session?.user ? (
             <div className="mt-4">
               <h2 className="text-lg font-bold">Chat History</h2>
               {loading ? (
@@ -154,9 +163,8 @@ export function Header({ setMessages, id }: { setMessages: React.Dispatch<React.
       <Link href="/" rel="nofollow" className="ml-auto font-bold">
         Next.js Gemini AI
       </Link>
-      {/* Social Links and Login Button */}
+      {/* Social Links and Auth Button */}
       <div className="flex items-center ml-auto space-x-6">
-
         {/* Social Links */}
         <ul className="flex space-x-6 items-center">
           <li>
@@ -180,6 +188,23 @@ export function Header({ setMessages, id }: { setMessages: React.Dispatch<React.
             </a>
           </li>
         </ul>
+        
+        {/* Authentication Button */}
+        {session?.user ? (
+          <button
+            onClick={() => signOut({ callbackUrl: '/login' })}
+            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+          >
+            Sign Out
+          </button>
+        ) : (
+          <Link
+            href="/login"
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+          >
+            Login
+          </Link>
+        )}
       </div>
     </header>
   )

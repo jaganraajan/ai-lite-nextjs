@@ -13,14 +13,16 @@ import ReactMarkdown from 'react-markdown';
 import { AiOutlineRobot } from 'react-icons/ai';
 import { HiOutlineUser } from "react-icons/hi";
 import axios from "axios";
+import { useSession } from 'next-auth/react';
 
-export default function Chat({ messages, setMessages, id }: { messages: CoreMessage[]; setMessages: React.Dispatch<React.SetStateAction<CoreMessage[]>>, id?: string }) {
+export default function Chat({ messages, setMessages, onChatHistoryRefresh }: { messages: CoreMessage[]; setMessages: React.Dispatch<React.SetStateAction<CoreMessage[]>>, onChatHistoryRefresh?: React.MutableRefObject<(() => void) | undefined> }) {
+    const { data: session } = useSession();
     const [input, setInput] = useState<string>('');  
     const [error, setError] = useState<string | null>(null); // State to track errors
     const chatContainerRef = useRef<HTMLDivElement>(null); // Ref for the chat container
 
     const handleStoreMessages = async (updatedMessages: CoreMessage[]) => {
-        if (!id) {
+        if (!session?.user?.id) {
           console.log("User is not logged in. Cannot store messages.");
           return;
         }
@@ -28,10 +30,15 @@ export default function Chat({ messages, setMessages, id }: { messages: CoreMess
         try {
           // Send a POST request to the API to store chat history
           await axios.post("/api/storeChatHistory", {
-            userId: id, // Pass the logged-in user's ID
+            userId: session.user.id, // Pass the logged-in user's ID from session
             messages: updatedMessages, // Pass the updated messages
           });
           console.log("Chat history stored successfully!");
+          
+          // Refresh chat history in sidebar after storing messages
+          if (onChatHistoryRefresh?.current) {
+            onChatHistoryRefresh.current();
+          }
         } catch (error) {
           console.error("Failed to store chat history:", error);
         }
